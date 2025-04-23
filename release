@@ -9,4 +9,4 @@ git push --tags
 
 rm -rf dist *.egg-info build
 python3 setup.py sdist
-twine upload -p $(cat token) dist/*
+twine upload -p "$(cat token)" dist/*
