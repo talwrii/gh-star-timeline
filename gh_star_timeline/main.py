@@ -79,15 +79,16 @@ def main():
         all_stars.extend(stars)
         num_stars = sum(event_stars(e) for e in stars)
         if args.fetch:
-            stars_for_repo = fetch_repo_stars(repo)
+            stars_for_repo = github_star_count(repo)
 
             if num_stars != stars_for_repo:
                 # Some stars have been removed refetch
-                logging.info('Stargazers and stars do not match for %r. Finding removed stars...')
+                logging.info('Stargazers and stars do not match for %r. Finding removed stars...', repo)
 
-                gazers = set(s["user"] for s in StarFetcher(repo).fetch())
-                fetched_gazers = set(s["user"] for s in fetch_repo_stars(repo))
-                for x in fetched_gazers - gazers:
+                new_gazers = set(s["user"] for s in StarFetcher(repo).fetch())
+                current_gazers = set(gazers_from_events(read_repo(repo)))
+                for x in current_gazers - new_gazers:
+                    logging.info("%r removed star from %r", x, repo)
                     remove_star(x)
 
                 num_stars = sum(event_stars(e) for e in read_repo(repo))
@@ -160,7 +161,7 @@ def event_stars(e):
     else:
         raise Exception(e["type"])
 
-def fetch_repo_stars(repo):
+def github_star_count(repo):
     for attempt in range(5):
         user, repo_name = repo.split("/")
         command = ["gh",  "api", f'repos/{user}/{repo_name}']
@@ -270,3 +271,20 @@ def zip_timeseries(series):
         if len(set([t for (t, _) in xs])) != 1:
             raise Exception(f'Timestamps do not match in {xs}')
         yield (xs[0][0],) + tuple(x[1] for x in xs)
+
+
+def gazers_from_events(events):
+    user_stars = {}
+    for x in events:
+        user_stars.setdefault(x["user"], 0)
+        match x["event"]:
+            case "added":
+                user_stars[x["user"]] += 1
+            case "removed":
+                user_stars[x["user"]] -= 1
+
+    for k, count in user_stars.items():
+        if count not in (0, 1):
+            raise Exception(f"{k} has a strange number of stars {count}")
+
+    return [x for x, count in user_stars.items() if count == 1]
