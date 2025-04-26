@@ -157,7 +157,6 @@ def fetch(repo):
             break
 
         for x in reversed(updates):
-            print(x["timestamp"], timestamp)
             if timestamp and x["timestamp"] < timestamp:
                 break
 
