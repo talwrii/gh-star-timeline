@@ -2,12 +2,12 @@ from typing import Iterator, Tuple
 import datetime
 import itertools
 
-def star_timeseries(stars, start:datetime.date=None, end:datetime.date=None) -> Iterator[tuple[str, float]]:
+def cumulative_star_count(events, start:datetime.date=None, end:datetime.date=None) -> Iterator[tuple[str, float]]:
     def series():
         total = 0
         date = start or None
 
-        for star in sorted(stars, key=lambda x: x["timestamp"]):
+        for star in sorted(events, key=lambda x: x["timestamp"]):
             if date:
                 while date < star_date(star):
                     yield date.isoformat(), total
@@ -40,3 +40,10 @@ def star_timeseries(stars, start:datetime.date=None, end:datetime.date=None) -> 
 
 def star_date(star):
     return datetime.datetime.fromisoformat(star["timestamp"]).date()
+
+
+def zip_timeseries(series):
+    for xs in zip(*series):
+        if len(set([t for (t, _) in xs])) != 1:
+            raise Exception(f'Timestamps do not match in {xs}')
+        yield (xs[0][0],) + tuple(x[1] for x in xs)
