@@ -52,7 +52,7 @@ def init_repos(args):
     if args.user:
         user = args.repo
         if args.fetch:
-            logging.info("Getting repos for %r...", user)
+            logging.info("Getting list of repos for %r...", user)
             repos = list(fetch_user_repos(user))
             Db.write_repos(user, repos)
             logging.info("Got repos.")
@@ -157,6 +157,7 @@ def fetch(repo):
             break
 
         for x in reversed(updates):
+            print(x["timestamp"], timestamp)
             if timestamp and x["timestamp"] < timestamp:
                 break
 
@@ -164,6 +165,9 @@ def fetch(repo):
                 break
 
             stars_to_add.append(x)
+        else:
+            continue
+        break
 
     cursor = guessed_cursor.next()
     while cursor:
@@ -180,7 +184,9 @@ def fetch(repo):
 
     logging.debug('Got %r pages while fetching starts for %r', pages_fetched, repo)
 
-    for star in reversed(stars_to_add):
+    stars_to_add = sorted(stars_to_add, key=lambda x: x["timestamp"])
+
+    for star in stars_to_add:
         Db.add_event(repo, star)
 
 def process_removed_stars(repo):

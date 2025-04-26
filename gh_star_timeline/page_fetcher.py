@@ -25,7 +25,7 @@ class PageCursor:
 
     def fetch(self):
         # We probably want to merge these two classes
-        return list(map(self.fetcher.parse, self.fetcher.fetch(page=self.page)))
+        return list(map(self.fetcher.parse, self.fetcher.fetch(self.page)))
 
     def prev(self):
         if self.page <= 1:

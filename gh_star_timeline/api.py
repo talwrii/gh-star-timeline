@@ -5,7 +5,7 @@ import logging
 
 def repos(user, page):
     for attempt in range(5):
-        command = ["gh",  "api", f'users/{user}/repos?per_page=100&page={i}']
+        command = ["gh",  "api", f'users/{user}/repos?per_page=100&page={page}']
         try:
             raw = subprocess.check_output(command)
         except subprocess.CalledProcessError:
