@@ -101,15 +101,6 @@ def main():
 
     display_data(args, repos, repo_star_count, combined_events)
 
-
-
-
-
-
-
-
-
-
 def fetch_user_repos(user):
     for i in itertools.count(1):
         updates = api.repos(user, i)
@@ -242,9 +233,9 @@ class Db:
 def display_data(args, repos, repo_star_count, combined_events):
     if not args.user:
         if args.timeseries:
-            output.format_star_count(combined_events)
+            display.format_star_count(combined_events)
         elif args.stars:
-            output.format_stars_json(combined_events)
+            display.format_stars_json(combined_events)
         else:
             print(list(repo_star_count.values())[0])
     else:
@@ -253,7 +244,7 @@ def display_data(args, repos, repo_star_count, combined_events):
             end = timestamps.date_string(max(s["timestamp"] for s in combined_events))
 
             if args.total:
-                output.format_star_count(combined_events)
+                display.format_star_count(combined_events)
             else:
                 series = [list(timeseries.cumulative_star_count([x for x in combined_events if x["repo"] == r], start, end)) for r in repos]
                 print(" ".join(["date"] + repos))
@@ -263,7 +254,7 @@ def display_data(args, repos, repo_star_count, combined_events):
         elif args.total:
             print(sum(repo_star_count.values()))
         elif args.stars:
-            output.format_stars_json(combined_events)
+            display.format_stars_json(combined_events)
         else:
             for k, v in repo_star_count.items():
                 print(k, v)

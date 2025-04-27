@@ -3,6 +3,22 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+cd "$(dirname ${BASH_SOURCE[0]})"
+
+if ! git diff --quiet ; then
+    echo >&2 "Uncommited changes"
+    exit 1
+fi;
+
+if ! git diff --cached  --quiet; then
+    echo >&2 "Staged changes"
+    exit 1
+fi
+
+pytest test.py
+./cli-test
+
+
 git push
 git tag $(python3 setup.py --version)
 git push --tags
