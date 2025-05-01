@@ -3,7 +3,7 @@ import distutils.core
 
 setuptools.setup(
     name='gh-star-timeline',
-    version="2.0.1",
+    version="2.1.0",
     author='@readwithai',
     long_description_content_type='text/markdown',
     author_email='talwrii@gmail.co',
