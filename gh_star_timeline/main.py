@@ -10,7 +10,8 @@ from . import timeseries, api, parse_api, timestamps, events, display, log_tqdm,
 
 STATS_DIR = Path.home() / ".local" / "state" / "gh-star-timeline"
 
-PARSER = argparse.ArgumentParser(description='Maintain a timeline of the number of stars for a repo')
+
+PARSER = argparse.ArgumentParser(description='Maintain a timeline of the number of stars for a repo', epilog="BY @READWITHAI 📖 https://readwithai.substack.com/ ⚡️ MACHINE-AIDED READING 🖋️")
 PARSER.add_argument('repo', nargs="?")
 PARSER.add_argument('--user', action='store_true', help="Get information about all repos for a user")
 PARSER.add_argument(
